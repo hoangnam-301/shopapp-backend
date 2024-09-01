@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "product")
-@Data
+@Table(name = "products")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+@Builder
+public class Product extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +20,13 @@ public class Product {
 
     private Float price;
 
-    @Column(name = "thumbnail", nullable = true, length = 300)
+    @Column(name = "thumbnail", length = 300)
     private String thumbnail;
+
+    @Column(name = "description")
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
