@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.web.WebProperties;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

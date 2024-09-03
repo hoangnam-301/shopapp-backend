@@ -1,6 +1,10 @@
 package com.example.shopapp.controller;
 
 import com.example.shopapp.dtos.*;
+import com.example.shopapp.models.Product;
+import com.example.shopapp.models.ProductImage;
+import com.example.shopapp.services.IProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +26,9 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/products")
+@RequiredArgsConstructor
 public class ProductController {
+    private final IProductService productService;
     @PostMapping(value = "",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createProduct(
@@ -37,6 +43,7 @@ public class ProductController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
+            Product newProduct = productService.createProduct(productDTO);
             List<MultipartFile> files = productDTO.getFiles();
             files = files == null ? new ArrayList<MultipartFile>() : files;
             for (MultipartFile file : files) {
@@ -53,7 +60,9 @@ public class ProductController {
                             .body("File must be an image");
                 }
                 String filename = storeFile(file);
+                ProductImage productImage = productService.createProductImage(newProduct.getId(),ProductImageDTO.builder().imageUrl(filename).build());
             }
+
             return ResponseEntity.ok("Product created successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
