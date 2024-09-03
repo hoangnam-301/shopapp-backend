@@ -19,7 +19,6 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
     @PostMapping("")
-    //Nếu tham số truyền vào là 1 object thì sao ? => Data Transfer Object = Request Object
     public ResponseEntity<?> createCategory(
             @Valid @RequestBody CategoryDTO categoryDTO,
             BindingResult result) {
@@ -34,7 +33,6 @@ public class CategoryController {
         return ResponseEntity.ok("Insert category successfully");
     }
 
-    //Hiện tất cả các categories
     @GetMapping("")
     public ResponseEntity<List<Category>> getAllCategories(
             @RequestParam("page")     int page,
