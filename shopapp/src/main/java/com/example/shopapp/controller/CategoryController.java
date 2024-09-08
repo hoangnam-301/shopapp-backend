@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("${api.prefix}/categories")
+@RequestMapping("api/v1/categories")
 //@Validated
 //Dependency Injection
 @RequiredArgsConstructor

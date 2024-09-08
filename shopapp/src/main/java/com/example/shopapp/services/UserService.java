@@ -24,7 +24,6 @@ public class UserService implements IUserService{
 
     @Override
     public User createUser(UserDTO userDTO) throws DataNotFoundException {
-        //register user
         String phoneNumber = userDTO.getPhoneNumber();
         if(userRepository.existsByPhoneNumber(phoneNumber)) {
             throw new DataIntegrityViolationException("Phone number already exists");
