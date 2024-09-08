@@ -29,10 +29,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductController {
     private final IProductService productService;
-    @PostMapping(value = "",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping("")
     public ResponseEntity<?> createProduct(
-            @Valid @ModelAttribute ProductDTO productDTO,
+            @Valid @RequestBody ProductDTO productDTO,
             BindingResult result
     ) {
         try {
@@ -44,8 +43,22 @@ public class ProductController {
                 return ResponseEntity.badRequest().body(errorMessages);
             }
             Product newProduct = productService.createProduct(productDTO);
-            List<MultipartFile> files = productDTO.getFiles();
+            return ResponseEntity.ok(newProduct);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PostMapping(value = "uploads/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadImages(
+            @PathVariable("id") Long productId,
+            @ModelAttribute("files") List<MultipartFile> files
+    ){
+        try {
+            Product existingProduct = productService.getProductById(productId);
             files = files == null ? new ArrayList<MultipartFile>() : files;
+
+            List<ProductImage> productImages = new ArrayList<>();
             for (MultipartFile file : files) {
                 if(file.getSize() == 0) {
                     continue;
@@ -60,10 +73,15 @@ public class ProductController {
                             .body("File must be an image");
                 }
                 String filename = storeFile(file);
-                ProductImage productImage = productService.createProductImage(newProduct.getId(),ProductImageDTO.builder().imageUrl(filename).build());
+                ProductImage productImage = productService.createProductImage(
+                        existingProduct.getId(),
+                        ProductImageDTO.builder()
+                                .imageUrl(filename)
+                                .build()
+                );
+                productImages.add(productImage);
             }
-
-            return ResponseEntity.ok("Product created successfully");
+            return ResponseEntity.ok().body(productImages);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
